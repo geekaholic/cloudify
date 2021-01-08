@@ -1,0 +1,1 @@
+aws s3api create-bucket --bucket terraformstatebucket3356
