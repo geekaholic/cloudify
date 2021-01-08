@@ -37,7 +37,7 @@ module "setup" {
 # Create codebuilds needed for codepipeline
 module "codebuild" {
   source           = "../modules/codebuild"
-	depends_on = [module.setup]
+  depends_on       = [module.setup]
   cb_name          = "${var.ns_prefix_use1}-cb-build"
   iam_role_pol     = module.setup.codebuild_iam_role_policy_arn
   codebuild_bucket = module.setup.codebuild_s3_bucket
@@ -49,7 +49,7 @@ module "codebuild" {
 # Create codepipeline
 module "codepipeline" {
   source                           = "../modules/codepipeline"
-	depends_on = [module.setup]
+  depends_on                       = [module.setup]
   cp_name                          = "${var.ns_prefix_use1}-cp"
   codepipeline_s3_bucket           = module.setup.codepipeline_s3_bucket
   codepipeline_iam_role_policy_arn = module.setup.codepipeline_iam_role_policy_arn

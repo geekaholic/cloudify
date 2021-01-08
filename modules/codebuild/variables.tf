@@ -13,9 +13,9 @@ variable "codebuild_bucket" {
 }
 
 variable "env_vars" {
-  type = list(any)
+  type        = list(any)
   description = "Codebuild env vars"
-  default = []
+  default     = []
 }
 
 variable "compute_type" {
@@ -29,6 +29,6 @@ variable "docker_image" {
 }
 
 variable "buildspec" {
-	description = "Codebuild buildspec"
-	default = ""
+  description = "Codebuild buildspec"
+  default     = ""
 }

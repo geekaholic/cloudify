@@ -21,7 +21,7 @@ resource "aws_codebuild_project" "codebuild_project" {
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
 
-    dynamic environment_variable {
+    dynamic "environment_variable" {
       for_each = [for v in var.env_vars : {
         name  = v.name
         value = v.value
@@ -41,7 +41,7 @@ resource "aws_codebuild_project" "codebuild_project" {
   }
 
   source {
-    type = "CODEPIPELINE"
-		buildspec = var.buildspec
+    type      = "CODEPIPELINE"
+    buildspec = var.buildspec
   }
 }

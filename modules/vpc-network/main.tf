@@ -18,15 +18,15 @@ data "aws_availability_zones" "azs" {
 
 # Create subnet
 resource "aws_subnet" "subnet" {
-  count                   = var.az_count
-  availability_zone       = element(data.aws_availability_zones.azs.names, count.index)
-  vpc_id                  = aws_vpc.vpc.id
-  cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 8, count.index)
+  count             = var.az_count
+  availability_zone = element(data.aws_availability_zones.azs.names, count.index)
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = cidrsubnet(aws_vpc.vpc.cidr_block, 8, count.index)
 }
 
 # Create gateway
 resource "aws_internet_gateway" "gw" {
-    vpc_id = aws_vpc.vpc.id
+  vpc_id = aws_vpc.vpc.id
 }
 
 # Create routing

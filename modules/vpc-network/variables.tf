@@ -9,7 +9,7 @@ variable "vpc_tag_name" {
 }
 
 variable "az_count" {
-  type = number
+  type        = number
   description = "Number of AZs within VPC"
-  default = 1
+  default     = 1
 }
