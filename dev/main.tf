@@ -10,6 +10,17 @@ locals {
       project_name     = "${var.ns_prefix_use1}-cb-build"
     }
   ]
+
+  buildspec = <<EOF
+version: 0.2
+phases:
+	install:
+    runtime-versions:
+      docker: 18
+  build:
+    commands:
+       - docker build --force-rm=true --tag="$USER/lychee-docker:latest" .
+EOF
 }
 
 # Create a VPC network with internet access
@@ -34,6 +45,17 @@ module "setup" {
   }
 }
 
+# Create ECR for pushing docker images
+resource "aws_ecr_repository" "ecr" {
+  name                 = var.ecr_name
+  image_tag_mutability = "MUTABLE"
+  provider             = aws.use1
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+
 # Create codebuilds needed for codepipeline
 module "codebuild" {
   source           = "../modules/codebuild"
@@ -41,6 +63,7 @@ module "codebuild" {
   cb_name          = "${var.ns_prefix_use1}-cb-build"
   iam_role_pol     = module.setup.codebuild_iam_role_policy_arn
   codebuild_bucket = module.setup.codebuild_s3_bucket
+  buildspec        = local.buildspec
   providers = {
     aws = aws.use1
   }
