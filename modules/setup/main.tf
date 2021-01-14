@@ -10,9 +10,9 @@ resource "aws_s3_bucket" "codebuild_bucket" {
 
 # Create IAM role for codebuilds
 resource "aws_iam_role" "codebuild_role" {
-  name = var.codebuild_iam_role_policy
+  name = var.codebuild_service_role
 
-  assume_role_policy = <<EOF
+  assume_role_policy = <<POLICY
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -25,15 +25,15 @@ resource "aws_iam_role" "codebuild_role" {
     }
   ]
 }
-EOF
+POLICY
 }
 
 
 # Create IAM policy for codebuilds
 resource "aws_iam_role_policy" "codebuild_policy" {
-  name = var.codebuild_iam_role_policy
-  role = aws_iam_role.codebuild_role.id
-  #role = aws_iam_role.codebuild_role.name
+  name = var.codebuild_service_role
+  #role = aws_iam_role.codebuild_role.id
+  role = aws_iam_role.codebuild_role.name
 
   policy = <<POLICY
 {
@@ -55,12 +55,11 @@ resource "aws_iam_role_policy" "codebuild_policy" {
       "Action": [
         "s3:GetObject",
         "s3:GetObjectVersion",
-        "s3:GetBucketVersioning"
+        "s3:GetBucketVersioning",
+				"s3:GetBucketAcl",
+        "s3:PutObject"
       ],
-      "Resource": [
-        "${aws_s3_bucket.codebuild_bucket.arn}",
-        "${aws_s3_bucket.codebuild_bucket.arn}/*"
-      ]
+      "Resource": ["*"]
     }
   ]
 }
@@ -78,7 +77,7 @@ resource "aws_s3_bucket" "codepipeline_bucket" {
 resource "aws_iam_role" "codepipeline_role" {
   name = var.codepipeline_iam_role_policy
 
-  assume_role_policy = <<EOF
+  assume_role_policy = <<POLICY
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -91,7 +90,7 @@ resource "aws_iam_role" "codepipeline_role" {
     }
   ]
 }
-EOF
+POLICY
 }
 
 # Create IAM policy for pipeline
@@ -99,7 +98,7 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
   name = var.codepipeline_iam_role_policy
   role = aws_iam_role.codepipeline_role.id
 
-  policy = <<EOF
+  policy = <<POLICY
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -111,10 +110,7 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
         "s3:GetBucketVersioning",
         "s3:PutObject"
       ],
-      "Resource": [
-        "${aws_s3_bucket.codepipeline_bucket.arn}",
-        "${aws_s3_bucket.codepipeline_bucket.arn}/*"
-      ]
+      "Resource": ["*"]
     },
     {
       "Effect": "Allow",
@@ -122,10 +118,10 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
         "codebuild:BatchGetBuilds",
         "codebuild:StartBuild"
       ],
-      "Resource": "*"
+      "Resource": ["*"]
     }
   ]
 }
-EOF
+POLICY
 }
 

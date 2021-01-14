@@ -10,17 +10,15 @@ locals {
       project_name     = "${var.ns_prefix_use1}-cb-build"
     }
   ]
+}
 
-  buildspec = <<EOF
-version: 0.2
-phases:
-	install:
-    runtime-versions:
-      docker: 18
-  build:
-    commands:
-       - docker build --force-rm=true --tag="$USER/lychee-docker:latest" .
-EOF
+data "template_file" "buildspec" {
+  template = file("buildspec.yml")
+  vars = {
+    DOCKER_IMG = var.github_repo
+		AWS_REGION = "us-east-1"
+		REGISTRY_URL = aws_ecr_repository.ecr.repository_url
+  }
 }
 
 # Create a VPC network with internet access
@@ -37,7 +35,7 @@ module "vpc-network" {
 module "setup" {
   source                       = "../modules/setup"
   codebuild_s3_bucket          = "${var.ns_prefix_use1}-cb-s3"
-  codebuild_iam_role_policy    = "${var.ns_prefix_use1}-cb-iampol"
+  codebuild_service_role       = "${var.ns_prefix_use1}-cb-iampol"
   codepipeline_s3_bucket       = "${var.ns_prefix_use1}-cp-s3"
   codepipeline_iam_role_policy = "${var.ns_prefix_use1}-cp-iampol"
   providers = {
@@ -61,9 +59,9 @@ module "codebuild" {
   source           = "../modules/codebuild"
   depends_on       = [module.setup]
   cb_name          = "${var.ns_prefix_use1}-cb-build"
-  iam_role_pol     = module.setup.codebuild_iam_role_policy_arn
+  service_role_arn = module.setup.codebuild_service_role_arn
   codebuild_bucket = module.setup.codebuild_s3_bucket
-  buildspec        = local.buildspec
+  buildspec        = data.template_file.buildspec.rendered
   providers = {
     aws = aws.use1
   }
@@ -77,9 +75,9 @@ module "codepipeline" {
   codepipeline_s3_bucket           = module.setup.codepipeline_s3_bucket
   codepipeline_iam_role_policy_arn = module.setup.codepipeline_iam_role_policy_arn
   github_token                     = var.github_token
-  github_owner                     = "geekaholic"
-  github_repo                      = "first-lang"
-  github_branch                    = "master"
+  github_owner                     = var.github_owner
+  github_repo                      = var.github_repo
+  github_branch                    = var.github_branch
   codebuild_stages                 = local.codebuild_stages
   providers = {
     aws = aws.use1

@@ -5,7 +5,7 @@ variable "cp_name" {
 }
 
 variable "codepipeline_s3_bucket" {
-  description = "Name of s3 bucket to create"
+  description = "Name of s3 bucket used for artifacts"
 }
 
 variable "codepipeline_iam_role_policy_arn" {

@@ -1,6 +1,6 @@
 # Module: setup/outputs.tf
 
-output "codebuild_iam_role_policy_arn" {
+output "codebuild_service_role_arn" {
   value = aws_iam_role.codebuild_role.arn
 }
 

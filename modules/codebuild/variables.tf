@@ -4,12 +4,16 @@ variable "cb_name" {
   description = "CodeBuild project name"
 }
 
-variable "iam_role_pol" {
-  description = "IAM role policy for codebuild"
+variable "service_role_arn" {
+  description = "IAM service role policy arn for codebuild"
 }
 
 variable "codebuild_bucket" {
   description = "Codebuild artifact s3 bucket"
+}
+
+variable "privileged_mode" {
+	default = true
 }
 
 variable "env_vars" {

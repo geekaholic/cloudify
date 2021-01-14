@@ -4,7 +4,7 @@ variable "codebuild_s3_bucket" {
   description = "Name of s3 bucket to create"
 }
 
-variable "codebuild_iam_role_policy" {
+variable "codebuild_service_role" {
   description = "Name of IAM role policy to create"
 }
 

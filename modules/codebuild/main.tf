@@ -4,7 +4,7 @@
 # Create codebuild task
 resource "aws_codebuild_project" "codebuild_project" {
   name         = var.cb_name
-  service_role = var.iam_role_pol
+  service_role = var.service_role_arn
 
   artifacts {
     type = "CODEPIPELINE"
@@ -20,6 +20,7 @@ resource "aws_codebuild_project" "codebuild_project" {
     image                       = var.docker_image
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
+		privileged_mode             = var.privileged_mode
 
     dynamic "environment_variable" {
       for_each = [for v in var.env_vars : {
