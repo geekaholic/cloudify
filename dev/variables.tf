@@ -11,7 +11,6 @@ variable "github_owner" {}
 variable "github_repo" {}
 variable "github_branch" {}
 
-variable "ecr_name" {
-  description = "Name of ECR repo"
+variable "aws_creds" {
+  type = map(any)
 }
-

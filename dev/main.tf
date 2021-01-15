@@ -15,9 +15,10 @@ locals {
 data "template_file" "buildspec" {
   template = file("buildspec.yml")
   vars = {
-    DOCKER_IMG = var.github_repo
-		AWS_REGION = "us-east-1"
-		REGISTRY_URL = aws_ecr_repository.ecr.repository_url
+    DOCKER_IMG   = var.github_repo
+    AWS_REGION   = "us-east-1"
+    REGISTRY_URL = aws_ecr_repository.ecr.repository_url
+    SM_NAME      = aws_secretsmanager_secret.sm.name
   }
 }
 
@@ -45,13 +46,25 @@ module "setup" {
 
 # Create ECR for pushing docker images
 resource "aws_ecr_repository" "ecr" {
-  name                 = var.ecr_name
+  name                 = var.github_repo
   image_tag_mutability = "MUTABLE"
   provider             = aws.use1
 
   image_scanning_configuration {
     scan_on_push = true
   }
+}
+
+# Create SecretsMgr and store creds
+resource "aws_secretsmanager_secret" "sm" {
+  name     = var.github_repo
+  provider = aws.use1
+}
+
+resource "aws_secretsmanager_secret_version" "sm" {
+  secret_id     = aws_secretsmanager_secret.sm.id
+  secret_string = jsonencode(var.aws_creds)
+  provider      = aws.use1
 }
 
 # Create codebuilds needed for codepipeline

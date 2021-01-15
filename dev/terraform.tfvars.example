@@ -1,2 +1,9 @@
 ns_prefix_use1 = "foo-use1"
 github_token = "replace_with_your_github_api_token"
+github_owner  = "replace_with_your_github_account"
+github_repo   = "replace_with_github_repo"
+github_branch = "your_github_branch"
+aws_creds = {
+  "AWS_ACCESS_KEY_ID"     = "XXXXXX"
+  "AWS_SECRET_ACCESS_KEY" = "YYYYYY"
+}

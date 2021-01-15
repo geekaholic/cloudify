@@ -1,4 +1,8 @@
 version: 0.2
+env:
+  secrets-manager:
+    AWS_ACCESS_KEY_ID: ${SM_NAME}:AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY: ${SM_NAME}:AWS_SECRET_ACCESS_KEY
 phases:
   install:
     runtime-versions:
@@ -8,9 +12,14 @@ phases:
       - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
   pre_build:
     commands:
-      - echo Logging in to Amazon ECR...
+      - echo Logging in to Amazon ECR ...
       - aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${REGISTRY_URL}
   build:
     commands:
       - echo Building docker image on `date`
       - docker build -t ${DOCKER_IMG}:latest .
+      - docker tag ${DOCKER_IMG}:latest ${REGISTRY_URL}:latest
+  post_build:
+    commands:
+      - echo Pushing docker image to ECR ...
+      - docker push ${REGISTRY_URL}:latest
