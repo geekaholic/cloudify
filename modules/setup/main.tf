@@ -32,7 +32,6 @@ POLICY
 # Create IAM policy for codebuilds
 resource "aws_iam_role_policy" "codebuild_policy" {
   name = var.codebuild_service_role
-  #role = aws_iam_role.codebuild_role.id
   role = aws_iam_role.codebuild_role.name
 
   policy = <<POLICY
