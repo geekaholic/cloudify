@@ -1,16 +1,11 @@
 # Module: codepipeline/main.tf
 # Sets up a code pipeline, using passed in codebuilds
 
-#data "aws_s3_bucket" "codepipeline_bucket" {
-#  bucket = var.codepipeline_s3_bucket
-#}
-
 resource "aws_codepipeline" "codepipeline" {
   name     = var.cp_name
   role_arn = var.codepipeline_iam_role_policy_arn
 
   artifact_store {
-    #location = data.aws_s3_bucket.codepipeline_bucket.bucket
     location = var.codepipeline_s3_bucket
     type     = "S3"
   }
